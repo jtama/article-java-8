@@ -1,0 +1,18 @@
+= Java 8: Non ce n'est pas que les streams
+:author_1: Lucile Thienot
+:email_1: l.thienot@groupeonepoint.com
+:author_2: Jérôme Tama
+:email_2: j.tama@groupeonepoint.com
+:docdate:
+:title-page:
+:icons: font
+:sectnums:
+:source-highlighter: coderay
+
+include::00-introduction.adoc[]
+include::01-inner-class-to-lambda.adoc[]
+include::02-java-util-function-package.adoc[]
+include::03-naming.adoc[]
+include::04-manipulating-functions.adoc[]
+include::05-streams-and-optionals.adoc[]
+

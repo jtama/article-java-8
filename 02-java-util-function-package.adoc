@@ -1,0 +1,1 @@
+== Consumer, supplier, Function and many others

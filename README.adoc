@@ -1,0 +1,13 @@
+= Java 8: Non ce n'est pas que les streams
+:source-highlighter: coderay
+
+Contenut de l'article
+
+== Génération du documents
+
+[source,bash]
+----
+docker run --rm -v $(pwd):/documents cds-bdx-docker.repo-nf.groupeonepoint.com/gop-asciidoctor:1.13 gop-pdf index.adoc
+----
+
+
