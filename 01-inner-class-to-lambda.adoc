@@ -1,1 +1,3 @@
 == Inner classes to lambdas
+
+Usueal legacy code
