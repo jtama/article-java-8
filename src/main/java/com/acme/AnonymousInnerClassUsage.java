@@ -13,6 +13,7 @@ public class AnonymousInnerClassUsage {
 
     private JdbcTemplate jdbcTemplate;
 
+    // tag::legacy[]
     public List<DataRecord> getDataRecordsByJobId(String jobId){
         return jdbcTemplate.query("select * from DATARECORD where job_id=?", new PreparedStatementSetter(){
 
@@ -30,5 +31,6 @@ public class AnonymousInnerClassUsage {
             
         });
     }
+    // end::legacy[]
     
 }

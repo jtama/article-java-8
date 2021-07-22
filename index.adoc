@@ -6,8 +6,8 @@
 :docdate:
 :title-page:
 :icons: font
-:sectnums:
 :source-highlighter: coderay
+:sectnums:
 
 include::00-introduction.adoc[]
 include::01-inner-class-to-lambda.adoc[]

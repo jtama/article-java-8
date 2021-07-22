@@ -1,3 +1,17 @@
 == Inner classes to lambdas
 
-Usueal legacy code
+Usual legacy code
+[source,java]
+----
+include::src/main/java/com/acme/AnonymousInnerClassUsage.java[tag=legacy]
+----
+
+[source,java]
+----
+include::src/main/java/com/acme/LambdaAsAnonymousInnerClassUsage.java[tag=lambda]
+----
+
+[source,java]
+----
+include::src/main/java/com/acme/NamedFunctionAsAnonymousInnerClassUsage.java[tag=named-functions]
+----

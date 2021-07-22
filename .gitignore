@@ -1,3 +1,8 @@
 .idea
 .asciidoctor
 *.pdf
+target
+.classpath
+.project
+.settings
+.vscode
