@@ -1,1 +1,63 @@
 == Consumer, supplier, Function and many others
+
+Les interfaces ne possédant qu'une unique méthode abstraite, qui peuvent donc être implémentées sous la forme de lambdas, sont appelées interfaces fonctionnelles et  peuvent être annotées @FunctionalInterface. Cette annotation permet au compilateur de vérifier que l'interface correspond bien aux critères de l'interface fonctionnelle.
+
+Par exemple, la classe Comparator<T> est une interface fonctionnelle dont la méthode compare(param1,param2) renvoie le résultat de la comparaison entre deux objets de type T. Elle existait bien avant java 8, mais cette dernière version l'a dotée de l'annotation @FunctionalInterface pour la désigner comme telle.
+
+
+Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée java.util.function, qui permettent de manipuler des fonctions sous la forme de lambdas.
+
+#### Des plus basiques ...
+
+- Function<T,R> : désigne une fonction prenant un paramètre d'entrée de type T et retournant un objet de type R.
+
+Exemple :
+Function<Integer, String> getNumber = entier -> "Number " + entier;
+
+Elle s'applique en utilisant apply :
+
+>> getNumber.apply(1);
+\\ renvoie Number 1
+
+- Consumer <T> : désigne une fonction prenant un paramètre d'entrée de type T et de type de retour void.
+
+Exemple :
+Consumer<Integer> display = entier -> System.out.println("Number " + entier);
+
+
+Elle s'applique en utilisant apply :
+
+>> display.apply(1); \\ affiche Number 1
+
+- Supplier<R> : désigne une fonction ne prenant aucun paramètre d'entrée et retournant un objet de type R.
+
+Exemple :
+Supplier<Double> randomFrom0To100 = () -> Math.random() * 100;
+
+
+Elle s'applique en utilisant get :
+
+>> randomFrom0To100.get(); \\ affiche un double aléatoire en 0 et 100
+
+- Predicate<T> : désigne une fonction prenant un paramètre d'entrée de type T et renvoyant un booléen.
+
+Exemple :
+Predicate<String> isNull = (str) -> str == null;
+
+
+Elle s'applique en utilisant test :
+
+>> isNull.test("HelloJava8"); // renvoie faux
+
+
+#### ... Aux plus spécifiques
+
+- BiFunction, BiConsumer : prennent en entrée deux paramètres.
+- UnaryOperator<T> : représente une fonction dont les types d'entrée et de retour sont identiques. C'est donc une Function<T,T>.  Et son dérivé BinaryOperator<T> qui prend deux paramètres en entrée.
+Par exemple :
+BinaryOperator<Integer> add = (a,b) -> a+b;
+
+- IntFunction<R>, IntConsumer  dont le type du paramètre d'entrée est int. IntSupplier dont le type de retour est int. Et les autres dérivés sur le même modèle : DoubleFunction, DoubleConsumer, DoubleSupplier, DoubleUnaryOperator, LongFunction, etc.
+- ToIntFunction<T> dont le type de retour est int, et ses dérivés : ToIntBiFunction, ToLongFunction, ToLongBiFunction, ToDoubleFunction, etc.
+
+

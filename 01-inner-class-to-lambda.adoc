@@ -6,12 +6,37 @@ Usual legacy code
 include::src/main/java/com/acme/AnonymousInnerClassUsage.java[tag=legacy]
 ----
 
+Les classes internes allègent le code en nous permettant de ne pas créer des classes à tour de bras pour finalement ne redéfinir ou n'implémenter qu'un nombre réduit de méthodes. Seulement ces classes internes restent très verbeuses : dans les classes internes de l'exemple ci-dessus, combien de lignes nous donnent réellement de l'information  ? Pour combien de lignes dont nous devons faire abstraction pour nous concentrer sur l'essentiel ?
+
+Dans l'exemple du PreparedStatementSetter, utilisé pour valoriser les paramètres d'une requête sql jdbc, l'information à retirer de la définition de la classe interne est la suivante : la valeur du premier paramètre de la requête est le résultat de la conversion de jobId en entier. Le reste n'est que syntaxe et bruit pour le lecteur. Et c'est ce que proposent de simplifier les expressions lambdas, introduites dans le langage java par java 8.
+
+Le raisonnement est le suivant : le PreparedStatementSetter n'a qu'une unique méthode à redéfinir. On pourrait donc se passer de préciser la méthode redéfinie lors  de l'implémentation. Quant au type du paramètre d'entrée de la méthode, il se déduit également de la définition de la méthode abstraite. Concernant le RowMapper, le type paramétré se déduit du type de l'objet retourné par la méthode mapRow. Appliquer ces simplifications via l'utilisation de lambdas donne le résultat suivant :
+
 [source,java]
 ----
 include::src/main/java/com/acme/LambdaAsAnonymousInnerClassUsage.java[tag=lambda]
 ----
 
+Il ne reste que l'essentiel : la définition du corps de la méthode en fonction des paramètres d'entrée.
+
+Les lambdas s'écrivent donc de la façon suivante :
+
+(paramètre1, paramètre2, .., paramètrex) -> traitement
+
+qui s'interprète :
+
+aux paramètres d'entrée paramètre1, paramètre2, ... paramètrex, on associe le traitement.
+
+Dans notre exemple, le compilateur comprend de lui-même qu'on a voulu définir un PreparedStatementSetter et un RowMapper via la redéfinition de leur unique méthode. Et pour preuve l'exemple suivant :
+
 [source,java]
 ----
 include::src/main/java/com/acme/NamedFunctionAsAnonymousInnerClassUsage.java[tag=named-functions]
 ----
+
+En extrayant les  lambdas dans une variable (exemple du RowMapper) ou dans une méthode (exemple du PreparedStatementSetter), on obtient les typages voulus, soit un RowMapper<DataRecord> et un PreparedStatementSetter. On a à l'occasion redonné des noms à nos objets à l'origine anonymes et gagné en lisibilité.
+
+
+
+
+
