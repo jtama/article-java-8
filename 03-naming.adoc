@@ -1,1 +1,89 @@
 == Oui mais alors on a perdu les noms ? Method référence, named lambda
+
+TODO blabla
+
+#### Référence de méthode
+
+Imaginons que nous ayons une liste de chaînes de caractères myList de type List<String>, dont nous souhaitons afficher chacun des élément sur la sortie standard.
+L'implémentation naïve serait la suivante :
+
+[source,java]
+----
+for (String element : myList) {
+    System.out.println(element);
+}
+----
+
+Mais maintenant que nous connaissons les lambdas, passons à une version plus concise :
+[source,java]
+----
+myList.forEach(element -> System.out.println(element));
+// pour chaque élément que l'on appelera "element" de myList,
+// appliquer la méthode System.out.println avec comme paramètre d'entrée "element"
+----
+La méthode forEach prend en effet un Consumer<String> : il prend une String en entrée et ne renvoie rien.
+
+On pourrait amplement se satisfaire de cette version. Mais poussons encore légèrement le curseur de la concision. En effet, le forEach itère sur une simple liste de chaînes de caractères : le consumer prendra forcément un élément de cette liste en paramètre d'entrée. Seule la méthode à appliquer aux éléments nous donne de l'information :
+
+[source,java]
+----
+ myList.forEach(System.out::println); //  à chaque élément de myList, appliquer la méthode println issue de la classe System.out
+----
+
+On vient alors d'utiliser une référence de méthode. De manière générale, les références de méthodes s'effectuent ainsi :
+
+----
+ <nom de la classe ou de l'instance>::<nom de la méthode>
+----
+
+
+
+#### Lambdas nommées
+
+Imaginons désormais que nous souhaitions concaténer notre élément à une autre chaîne de caractères lors de l'affichage :
+[source,java]
+----
+   myList.forEach(element -> System.out.println("This is one element of my list: " + element);
+----
+Il n'est pas possible de faire référence à la méthode println, puisque son paramètre d'entrée ne peut plus être implicite.
+
+En revanche, si nous avons plusieurs listes sur lesquelles appliquer ce traitement, il est possible de mutualiser la déclaration de notre expression lambda.
+
+[source,java]
+----
+myList.forEach(element -> System.out.println("This is one element of my list: " + element);
+theirList.forEach(element -> System.out.println("This is one element of my list: " + element);
+----
+
+peut devenir :
+
+[source,java]
+----
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=named-lambda]
+----
+
+On a pu extraire l'expression lambda dans une variable de type Consumer<String> et ainsi la nommer et la réutiliser.
+
+Concrètement, cet exemple est équivalent à  :
+
+
+[source,java]
+----
+include::src/main/java/com/acme/MethodReferencePrinter.java[tag=named-lambda-equivalence]
+----
+
+
+
+
+
+
+
+[source,java]
+----
+myList.forEach(element -> // pour chaque élément que l'on appelera "element" de myList,
+    {
+        if (Pattern.matches("[A-Za-z]+", element)) // si element est uniquement constitué de lettres
+            System.out.println(element); // appliquer la méthode System.out.println avec comme paramètre d'entrée "element"
+    }
+);
+----

@@ -1,61 +1,82 @@
 == Consumer, supplier, Function and many others
 
-Les interfaces ne possédant qu'une unique méthode abstraite, qui peuvent donc être implémentées sous la forme de lambdas, sont appelées interfaces fonctionnelles et  peuvent être annotées @FunctionalInterface. Cette annotation permet au compilateur de vérifier que l'interface correspond bien aux critères de l'interface fonctionnelle.
+Les interfaces qui peuvent être implémentées sous la forme de lambdas ne possèdent qu'une unique méthode abstraite. Elles sont appelées interfaces fonctionnelles et peuvent être annotées @FunctionalInterface. Cette annotation permet au compilateur de vérifier que l'interface est bien fonctionnelle, mais elle n'est en aucun cas obligatoire.
 
-Par exemple, la classe Comparator<T> est une interface fonctionnelle dont la méthode compare(param1,param2) renvoie le résultat de la comparaison entre deux objets de type T. Elle existait bien avant java 8, mais cette dernière version l'a dotée de l'annotation @FunctionalInterface pour la désigner comme telle.
+Par exemple la classe Comparator<T> est une interface fonctionnelle connue de tout développeur : sa méthode compare(param1,param2) renvoie le résultat de la comparaison entre deux objets de type T. Elle existait certes avant java 8, mais cette dernière version l'a dotée de l'annotation @FunctionalInterface pour la désigner comme telle.
 
-
-Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée java.util.function, qui permettent de manipuler des fonctions sous la forme de lambdas.
+Nous avons jusqu'ici utilisé des expressions lambdas pour implémenter des interfaces  courantes comme RowMapper, Comparator ou Runnable. Mais les lambdas sont plus largement utilisées pour définir des méthodes à l'endroit même où elles sont utilisées, sans porter d'intérêt particulier à l'interface fonctionnelle sous-jacente. Il est possible de vouloir déclarer de telles méthodes lorsqu'elles ne sont utilisées qu'une fois par exemple, ou encore pour passer un traitement en paramètre d'un autre traitement.
+La méthode que l'on souhaite définir via une lambda doit alors également implémenter une interface fonctionnelle. Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée java.util.function, qui permet au développeur d'avoir accès aux interfaces fonctionnelles les plus communes sans les définir lui-même.
 
 #### Des plus basiques ...
 
 - Function<T,R> : désigne une fonction prenant un paramètre d'entrée de type T et retournant un objet de type R.
 
-Exemple :
+[source,java]
+----
 Function<Integer, String> getNumber = entier -> "Number " + entier;
+----
 
 Elle s'applique en utilisant apply :
 
->> getNumber.apply(1);
-\\ renvoie Number 1
+[source]
+----
+>> getNumber.apply(1); \\ renvoie Number 1
+----
 
 - Consumer <T> : désigne une fonction prenant un paramètre d'entrée de type T et de type de retour void.
 
-Exemple :
+[source,java]
+----
 Consumer<Integer> display = entier -> System.out.println("Number " + entier);
-
+----
 
 Elle s'applique en utilisant apply :
 
+[source]
+----
 >> display.apply(1); \\ affiche Number 1
+----
 
 - Supplier<R> : désigne une fonction ne prenant aucun paramètre d'entrée et retournant un objet de type R.
 
-Exemple :
+[source,java]
+----
 Supplier<Double> randomFrom0To100 = () -> Math.random() * 100;
-
+----
 
 Elle s'applique en utilisant get :
 
+[source]
+----
 >> randomFrom0To100.get(); \\ affiche un double aléatoire en 0 et 100
+----
 
 - Predicate<T> : désigne une fonction prenant un paramètre d'entrée de type T et renvoyant un booléen.
 
 Exemple :
-Predicate<String> isNull = (str) -> str == null;
 
+[source,java]
+----
+Predicate<String> isNull = (str) -> str == null;
+----
 
 Elle s'applique en utilisant test :
 
+[source]
+----
 >> isNull.test("HelloJava8"); // renvoie faux
-
+----
 
 #### ... Aux plus spécifiques
 
-- BiFunction, BiConsumer : prennent en entrée deux paramètres.
+- BiFunction<T,U,R>, BiConsumer<T,U> : prennent en entrée deux paramètres.
 - UnaryOperator<T> : représente une fonction dont les types d'entrée et de retour sont identiques. C'est donc une Function<T,T>.  Et son dérivé BinaryOperator<T> qui prend deux paramètres en entrée.
 Par exemple :
+
+[source,java]
+----
 BinaryOperator<Integer> add = (a,b) -> a+b;
+----
 
 - IntFunction<R>, IntConsumer  dont le type du paramètre d'entrée est int. IntSupplier dont le type de retour est int. Et les autres dérivés sur le même modèle : DoubleFunction, DoubleConsumer, DoubleSupplier, DoubleUnaryOperator, LongFunction, etc.
 - ToIntFunction<T> dont le type de retour est int, et ses dérivés : ToIntBiFunction, ToLongFunction, ToLongBiFunction, ToDoubleFunction, etc.
