@@ -1,7 +1,8 @@
 == Streams et Optional
 
-L'API streams est apparue avec Java 8 et se prête très bien à l'utilisation de lambdas et référence de méthode. Un stream est un objet java qui permet de définir une série de traitements à réaliser sur une collection ou tableau d'objets sans structure de boucle, via une api très complète et la manipulation d'expressions lambdas.
-La programmation devient déclarative au lieu d'être impérative : déclarer ce que doit faire un traitement et non comment il doit le faire. Dans ce cadre déclaratif, les fonctions sont manipulées comme n'importe quel objet java pour être passées en paramètre ou retournées, d'où l'utilisation des interfaces fonctionnelles.
+L'API `Stream<T>` a été introduite par Java 8. Le stream est un objet java qui permet de définir via une api une série de traitements à réaliser sur une collection ou tableau d'objets . Cette api nécessite largement l'utilisation de lambdas et référence de méthodes. En revanche, aucune structure de boucle n'est nécessaire pour appliquer ces opérations.
+
+Avec les streams, la programmation java peut devenir déclarative au lieu d'être impérative : déclarer ce que doit faire un traitement et non comment il doit le faire. Dans ce cadre déclaratif, les fonctions sont manipulées comme n'importe quel objet java pour être passées en paramètre ou retournées.
 
 Prenons un exemple :
 
@@ -26,12 +27,96 @@ L'exemple suivant ne fonctionnera donc pas :
 include::src/main/java/com/acme/StreamNotReusable.java[tag=no-reusability]
 ----
 
-#### Créer un stream : générateurs de flux
+=== Créer un stream : générateurs de flux
+Toute séquence d'éléments peut être transformée en stream :
+
+- Un tableau :
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=generate-from-array-1]
+----
+- Une Collection :
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=generate-from-collection]
+----
+- Une suite numérique :
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=generate-from-suite]
+----
+- Un autre flux :
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=generate-from-stream]
+----
+
+- Ou même rien du tout :
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=generate-from-void]
+----
+
+=== Appliquer des opérations : méthodes intermédiaires
+Les méthodes intermédiaires sont l'ensemble des opérations applicables à un Stream et qui renvoient un Stream. Puisqu'elles renvoient un Stream, elles peuvent être chaînées pour appliquer plusieurs méthodes intermédiaires successivement.
 
 
-#### Appliquer des opérations : méthodes intermédiaires
+- `distinct` : ne conserve que les éléments non égaux du Stream initial.
 
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-distinct]
+----
+- `sorted` : trie les éléments selon leur ordre naturel. Il est possible de préciser l'ordre dans lequel les éléments doivent être triés en fournissant un Comparator en entrée.
 
-#### Obtenir un résultat : méthodes terminales
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-sorted]
+----
+- `limit` / `skip` : `limit(x)` tronque le stream à x éléments, tandis que `skip(x)` retire du stream les x premiers éléments.
+
+- `filter` : retire du stream tous les éléments ne respectant pas le prédicat passé en paramètre.
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-filter]
+----
+- `map` : applique une opération de transformation sur chacun des éléments du stream.
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-map]
+----
+`mapToInt`, `mapToDouble` et `mapToLong` sont des spécialisations de map qui imposent que le Stream résultant de l'application du map soit respectivement un `IntStream`, `DoubleStream`, `LongStream`. Ces streams permettent de manipuler les types primitifs `int`, `double` et `long`.
+
+- `flatMap` : transforme chaque élément du stream en un autre stream via la fonction passée en paramètre et retourne la concaténation de chacun des streams obtenus.
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-flatmap]
+----
+Dans l'exemple ci-dessus, `letters` est un stream composé de chacun des caractères présents dans chacun des noms de `names`. Il équivaut à :
+[source]
+----
+Stream<String> names = Stream.of("P","i","e","r","r","e","-","T","o","t","o", "J","e","a","n","-","T","o","t","o", "T","u","t","u", "T","o","t","o");
+----
+Le stream d'origine n'a donc pas forcément la même cardinalité que le stream résultant du `flatmap`.
+
+- `peek`
+
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-]
+----
+
+=== Obtenir un résultat : méthodes terminales
+Les méthodes terminales sont les méthodes de l'API stream qui ne renvoient pas un Stream. Elles ne peuvent donc pas être chaînées.
+
+=== Optionals
 
 
