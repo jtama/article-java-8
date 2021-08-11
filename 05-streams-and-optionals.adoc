@@ -15,7 +15,7 @@ Ce programme déclare les opérations à effectuer :
 - la création d'un stream à partir d'un tableau
 - le critère sur lequel filtrer les éléments
 - la suppression de doublon
-- le décompte d'élements.
+- le décompte d'éléments.
 
 A aucun moment la façon d'exécuter ces traitements n'est définie : pas de boucle, pas de variable locale pour stocker les résultats temporaires, etc. Le stream est maître des algorithmes à utiliser, de l'optimisation et même de l'ordonnancement des opérations. La documentation de chacune des méthodes du stream précise les garanties qu'elles offrent, charge au développeur de les prendre en compte.
 
@@ -115,7 +115,53 @@ include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-]
 ----
 
 === Obtenir un résultat : méthodes terminales
-Les méthodes terminales sont les méthodes de l'API stream qui ne renvoient pas un Stream. Elles ne peuvent donc pas être chaînées.
+Les méthodes terminales sont les méthodes de l'API stream qui ne renvoient pas un Stream : elles terminent donc les enchaînements d'opérations sur un Stream.
+
+
+
+==== Dénombrer
+- `count` :
+    ** dénombre les éléments présents dans le Stream.
+    ** type de retour : `long`
+
+==== Réduire
+Les méthodes de réduction permettent de passer d'un Stream à un unique résultat.
+
+- `allMatch` :
+    ** renvoie vrai si tous les éléments du Stream respectent le prédicat fourni en paramètre. Faux sinon.
+    **  type de retour : `boolean`
+- `anyMatch` :
+    ** renvoie vrai si au moins un élément du Stream respecte le prédicat fourni en paramètre. Faux sinon.
+**  type de retour : `boolean`
+- `noneMatch` :
+    ** renvoie vrai si aucun élément du Stream ne respecte le prédicat fourni en paramètre. Faux sinon.
+**  type de retour : `boolean`
+- `reduce` :
+    ** TODO
+    **  type de retour : `boolean`
+
+- `collect` : rassemble tous les éléments du Stream dans un nouvel objet, tel qu'une List, une Map ou une String par exemple.
+    ** `collect` prend en paramètre un collecteur de type `Collector`. `Collectors` propose plusieurs implémentations usuelles telles que tolist().
+
+
+==== Rechercher
+Les méthodes de recherche d'éléments renvoient des `Optional<T>`. Un `Optional` encapsule un objet java (ou du vide) et fournit une api qui permet de mettre en place des traitements dépendant de la nullité de l'objet, sans mettre en place de structure conditionnelle.
+
+Pour un stream de type `Stream<T>` :
+
+- `findAny` :
+    ** renvoie n'importe quel élément du stream.
+    ** type de retour : `Optional<T>`
+- `findFirst`:
+    ** renvoie le premier élément du stream
+    ** type de retour : `Optional<T>`
+- `max`:
+    ** renvoie l'élément le plus grand du stream, selon le comparateur passé en paramètre
+    ** type de retour : `Optional<T>`
+- `min`:
+    ** renvoie l'élément le plus petit du stream, selon le comparateur passé en paramètre
+    ** type de retour : `Optional<T>`
+
 
 === Optionals
 
