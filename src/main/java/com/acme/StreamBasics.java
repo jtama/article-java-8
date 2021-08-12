@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -33,6 +34,35 @@ public class StreamBasics {
         filter();
         map();
         flatMap();
+    }
+
+    public void howToTerminate() throws IOException {
+        // tag::end-methods-reduce[]
+        class PairOfSocks {
+            public PairOfSocks(String color, int size) {
+                this.color = color;
+                this.size = size;
+            }
+
+            private String color;
+            private int size;
+        }
+
+        PairOfSocks[] socks = {
+                new PairOfSocks("blanc", 38),
+                new PairOfSocks("bordeaux", 42),
+                new PairOfSocks("bleu", 39)
+        };
+
+        PairOfSocks neutralSock = new PairOfSocks("gris", 40);
+        BinaryOperator<PairOfSocks> makePatchworkSocks = (someSocks, someOtherSocks) -> new PairOfSocks(someSocks.color + "," + someOtherSocks.color, someSocks.size);
+
+        PairOfSocks patchworkSocks = Arrays.stream(socks).reduce(neutralSock, makePatchworkSocks); // >> donne une PairOfSocks("gris,blanc,bordeaux,bleu", 40)
+        // end::end-methods-reduce[]
+
+        // tag::end-methods-[]
+
+        // end::end-methods-[]
     }
 
     private void distinct() {
