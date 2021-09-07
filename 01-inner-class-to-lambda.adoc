@@ -1,17 +1,34 @@
+Plongeons tout de suite dans les lambdas.
+
+Pour nous servir d'exemple nous utiliserons l'interface `org.springframework.jdbc.core.RowMapper` :
+
+[source,java]
+----
+public interface RowMapper<T> {
+
+	T mapRow(ResultSet rs, int rowNum) throws SQLException;
+
+}
+----
+
 == Inner classes to lambdas
 
 Les classes internes allègent le code en nous permettant de ne pas créer des classes à tour de bras pour finalement ne redéfinir ou n'implémenter qu'un nombre réduit de méthodes.
+
 Seulement ces classes internes restent très verbeuses : dans les classes internes de l'exemple ci-dessous, combien de lignes nous donnent réellement de l'information  ? Pour combien de lignes dont nous devons faire abstraction pour nous concentrer sur l'essentiel ?
 
 [source,java]
 ----
-include::src/main/java/com/acme/AnonymousInnerClassUsage.java[tag=legacy]
+include::src/main/java/com/acme/AnonymousInnerClassUsage.java[tag=legacySample]
 ----
+<1> Déclaration et utisation de l'inner classe
+<2> Implémentation de la méthode.
 
-Dans l'exemple du PreparedStatementSetter, utilisé pour valoriser les paramètres d'une requête sql jdbc, l'information que l'on retire de la définition de la classe interne est :
+
+Dans l'exemple du `RowMapper`, utilisé pour extraire le ressource d'une requête sql jdbc, l'information que l'on retire de la définition de la classe interne est :
 
 ----
-La valeur du premier paramètre de la requête est le résultat de la conversion de jobId en entier.
+L'instance de la classe `DataRecord` est crée en exploitant les colonnes `job_id` et `analysis_name`.
 ----
 
 Le reste n'est que syntaxe et bruit pour le lecteur.
@@ -19,7 +36,7 @@ Et c'est ce que proposent de simplifier les expressions lambdas, introduites dan
 
 Le raisonnement est le suivant :
 
-- le PreparedStatementSetter n'a qu'une unique méthode à redéfinir.
+- le `RowMapper` n'a qu'une unique méthode à redéfinir.
 On pourrait donc se passer de préciser la méthode redéfinie lors de l'implémentation.
 - le type du paramètre d'entrée de la méthode peut se déduire de la définition de la méthode abstraite.
 - le type paramétré du RowMapper se déduit du type de l'objet retourné par la méthode mapRow.
@@ -27,6 +44,7 @@ On pourrait donc se passer de préciser la méthode redéfinie lors de l'implém
 Les expressions lambdas permettent d'appliquer ces simplifications.
 
 === Mais c'est quoi une lambda ?
+Les expression lambdas sont un sucre syntaxique simplifiant l'implémentation de classe/interface
 Les expressions lambdas permettent de définir des fonctions sans les nommer. Elles peuvent être manipulées et exécutées dans un programme sans avoir un nommage figé.
 
 Les lambdas s'écrivent donc de la façon suivante :
@@ -35,80 +53,66 @@ Les lambdas s'écrivent donc de la façon suivante :
 (Type1 param1, Type2 param2, .., TypeN paramN) -> { traitement }
 ----
 
-=== Utilisons les pour mieux les comprendre
+=== Utilisons-les pour mieux les comprendre
 
 Appliquons les simplifications énoncées ci-dessus à notre exemple :
 
 [source,java]
 ----
-include::src/main/java/com/acme/LambdaAsAnonymousInnerClassUsage.java[tag=lambda]
+include::src/main/java/com/acme/LambdaAsAnonymousInnerClassUsage.java[tag=lambdaSample]
 ----
 
 Il ne reste que l'essentiel : la définition du corps de la méthode en fonction des paramètres d'entrée.
 
-La donnée essentielle que nous avions repérée dans le premier exemple :
-
-----
-La valeur du premier paramètre de la requête est le résultat de la conversion de jobId en entier.
-----
-
-est devenue :
-
-[source]
-----
-ps -> ps.setInt(0, Integer.parseInt(jobId))
-----
-
-où `ps` est le PreparedStatement dans lequel on souhaite valoriser des paramètres. `ps` est donc l'unique argument de la fonction ainsi définie, et `ps.setInt(0, Integer.parseInt(jobId))` est le traitement à appliquer à cet argument.
-
-Dans notre exemple, le compilateur comprend de lui-même qu'on définit un PreparedStatementSetter et un RowMapper via l'implémentation de leur unique méthode.
-Et pour preuve l'exemple suivant :
+La donnée essentielle s'écrit maintenant:
 
 [source,java]
 ----
-include::src/main/java/com/acme/NamedFunctionAsAnonymousInnerClassUsage.java[tag=named-functions]
+(ResultSet rs, int rowNum) -> {
+                return new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"));
+            }
 ----
 
-En extrayant les lambdas dans une variable (exemple du RowMapper) ou dans une méthode (exemple du PreparedStatementSetter), on obtient un RowMapper<DataRecord> et un PreparedStatementSetter.
-On a à l'occasion redonné des noms à nos objets à l'origine anonymes et gagné en lisibilité.
+où `rs` est le résultat de la requête, `rowNum` est le numéro de la ligne en cours.
 
+Dans notre exemple, le compilateur comprend de lui-même qu'on définit un RowMapper via l'implémentation de son unique méthode.
 
 Notons que dans une expression lambda :
 
 - Si le type des paramètres peut être inféré, leur type peut être omis.
+- Si il y un et un seul paramètre les `()` peuvent être omises
 - Quant aux accolades `{}` autour du traitement, elles peuvent être omises s'il ne contient qu'une instruction. Dans ce cas, le mot clé `return` et le point-virgule `;` de fin d'instruction peuvent eux aussi être omis.
 - Le nom des paramètres est indépendant de celui défini dans la méthode abstraite.
 
+Si on applique toutes ces règles on peut encore simplifier la lambda utilisée pour définir le `RowMapper` :
 
-La lambda utilisée pour définir le RowMapper<DataRecord> qui s'écrivait
-[source]
+[source,java]
 ----
-(rs, rowNum) -> new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"))
-----
-aurait donc aussi bien pu s'écrire :
-
-[source]
-----
-(ResultSet r rs, int rowNum) -> new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"))
+(ResultSet rs, int rowNum) -> {
+                return new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"));
+            }
 ----
 
-ou
+puis
 
-[source]
+[source,java]
 ----
-(rs, rowNum) -> {
-    return new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"));
-}
-----
-
-ou encore
-
-[source]
-----
-(resultSet, rowNumber) ->  new DataRecord(resultSet.getString("job_id"), resultSet.getString("analysis_name"))
+(resulSet, index) -> {
+                return new DataRecord(resulSet.getString("job_id"), resulSet.getString("analysis_name"));
+            }
 ----
 
+puis
 
+[source, java]
+----
+(rs, rowNum) -> new DataRecord(rs.getString("job_id"), rs.getString("analysis_name")))
+----
 
+[WARNING]
+====
+ Si il est vrai que les lambdas peuvent améliorer la lisibilité du code. Ce n'est pas toujours le cas. En effet une lambda
+de 40 lignes posée comme une verrue au mileu de votre code ne facilitera la lecture du code pour personne.
 
-
+Par ailleurs, il est strictement interdit de laisser sortir une _checked exception_ d'une lambda. Si vous avez l'habitude dans utiliser, c'est le moment ou jamais d'arréter avec cette hérésie.
+====

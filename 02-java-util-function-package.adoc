@@ -8,13 +8,13 @@ Nous avons jusqu'ici utilisé des expressions lambdas pour implémenter des inte
 La méthode que l'on souhaite définir via une lambda doit ici encore implémenter une interface fonctionnelle. Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée java.util.function, qui permet au développeur d'avoir accès aux interfaces fonctionnelles les plus communes sans les définir lui-même.
 
 === L'essentiel
-Les fonctions de l'api java.util.function sont des spécialisations des types suivants :
+Les interfaces du package `java.util.function` (naissance avec Java 8) sont des fonctions génériques définissant les cas d'usages les plus courants:
 
-- Une `Function` prendra un ou plusieurs paramètres en entrée et retournera un résultat.
-- Un `Supplier` ne prendra pas de paramètre d'entrée et fournira un résultat.
-- Un `Consumer` prendra un ou plusieurs paramètres d'entrée et ne renverra aucun résultat.
-- Un `Operator` prendra un ou plusieurs paramètres du même type et fournira un retour de ce type.
-- Un `Predicate` prendra un ou plusieurs paramètres en entrée et retournera un booléen.
+- Une _function_ prendra un ou plusieurs paramètres en entrée et retournera un résultat.
+- Un _supplier_ ne prendra pas de paramètre d'entrée et fournira un résultat.
+- Un _consumer_ prendra un ou plusieurs paramètres d'entrée et ne renverra aucun résultat.
+- Un _operator_ prendra un ou plusieurs paramètres du même type et fournira un retour de ce type.
+- Un _predicate_ prendra un ou plusieurs paramètres en entrée et retournera un booléen.
 
 === Plus en détail
 

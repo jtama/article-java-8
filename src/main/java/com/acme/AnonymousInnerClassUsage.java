@@ -13,6 +13,19 @@ public class AnonymousInnerClassUsage {
 
     private JdbcTemplate jdbcTemplate;
 
+    // tag::legacySample[]
+public List<DataRecord> getDataRecords(String jobId){
+    return jdbcTemplate.query("select * from DATARECORD ",
+                    new RowMapper<DataRecord>(){ //<1>
+                        @Override
+                        public DataRecord mapRow(ResultSet rs, int rowNum) throws SQLException { //<2>
+                            return new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"));
+                        }
+
+                    });
+}
+    // end::legacySample[]
+
     // tag::legacy[]
     public List<DataRecord> getDataRecordsByJobId(String jobId){
         return jdbcTemplate.query("select * from DATARECORD where job_id=?", new PreparedStatementSetter(){
