@@ -5,7 +5,7 @@ Les interfaces qui peuvent être implémentées sous la forme de lambdas ne poss
 La classe `Comparator<T>` est un exemple d'interface fonctionnelle commune aux développeurs : sa méthode `compare(param1,param2)` renvoie le résultat de la comparaison entre deux objets de type `T`. Elle existait certes avant java 8, mais cette dernière version l'a dotée de l'annotation `@FunctionalInterface` pour la désigner comme telle.
 
 Nous avons jusqu'ici utilisé des expressions lambdas pour implémenter des interfaces  courantes comme RowMapper, Comparator ou Runnable. Mais les lambdas sont plus largement utilisées pour définir des méthodes à l'endroit même où elles sont utilisées, sans porter d'intérêt particulier à l'interface fonctionnelle sous-jacente. Il est possible de vouloir déclarer de telles méthodes lorsqu'elles ne sont utilisées qu'une fois par exemple, ou encore pour passer un traitement en paramètre d'un autre traitement.
-La méthode que l'on souhaite définir via une lambda doit ici encore implémenter une interface fonctionnelle. Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée java.util.function, qui permet au développeur d'avoir accès aux interfaces fonctionnelles les plus communes sans les définir lui-même.
+La méthode que l'on souhaite définir via une lambda doit ici encore implémenter une interface fonctionnelle. Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée `java.util.function`, qui permet au développeur d'avoir accès aux interfaces fonctionnelles les plus communes sans les définir lui-même.
 
 === L'essentiel
 Les interfaces du package `java.util.function` (naissance avec Java 8) sont des fonctions génériques définissant les cas d'usages les plus courants:

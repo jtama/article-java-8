@@ -1,8 +1,12 @@
+== Inner classes to lambdas
+
 Plongeons tout de suite dans les lambdas.
 
 Pour nous servir d'exemple nous utiliserons l'interface `org.springframework.jdbc.core.RowMapper` :
 
+
 [source,java]
+.small
 ----
 public interface RowMapper<T> {
 
@@ -10,8 +14,6 @@ public interface RowMapper<T> {
 
 }
 ----
-
-== Inner classes to lambdas
 
 Les classes internes allègent le code en nous permettant de ne pas créer des classes à tour de bras pour finalement ne redéfinir ou n'implémenter qu'un nombre réduit de méthodes.
 
@@ -25,14 +27,14 @@ include::src/main/java/com/acme/AnonymousInnerClassUsage.java[tag=legacySample]
 <2> Implémentation de la méthode.
 
 
-Dans l'exemple du `RowMapper`, utilisé pour extraire le ressource d'une requête sql jdbc, l'information que l'on retire de la définition de la classe interne est :
+Dans l'exemple du `RowMapper`, utilisé pour extraire le retour d'une requête sql jdbc, l'information que l'on retire de la définition de la classe interne est :
 
 ----
 L'instance de la classe `DataRecord` est crée en exploitant les colonnes `job_id` et `analysis_name`.
 ----
 
 Le reste n'est que syntaxe et bruit pour le lecteur.
-Et c'est ce que proposent de simplifier les expressions lambdas, introduites dans le langage java par java 8.
+Et c'est ce que proposent de simplifier les expressions lambdas, introduites en java 8.
 
 Le raisonnement est le suivant :
 
@@ -44,10 +46,11 @@ On pourrait donc se passer de préciser la méthode redéfinie lors de l'implém
 Les expressions lambdas permettent d'appliquer ces simplifications.
 
 === Mais c'est quoi une lambda ?
-Les expression lambdas sont un sucre syntaxique simplifiant l'implémentation de classe/interface
-Les expressions lambdas permettent de définir des fonctions sans les nommer. Elles peuvent être manipulées et exécutées dans un programme sans avoir un nommage figé.
+Les expression lambdas sont un sucre syntaxique simplifiant l'implémentation de classe/interface.
 
-Les lambdas s'écrivent donc de la façon suivante :
+Elles permettent de définir des fonctions sans les nommer. Elles peuvent être manipulées et exécutées dans un programme sans avoir un nommage figé.
+
+Les lambdas s'écrivent de la façon suivante :
 
 ----
 (Type1 param1, Type2 param2, .., TypeN paramN) -> { traitement }
@@ -79,10 +82,10 @@ Dans notre exemple, le compilateur comprend de lui-même qu'on définit un RowMa
 
 Notons que dans une expression lambda :
 
-- Si le type des paramètres peut être inféré, leur type peut être omis.
-- Si il y un et un seul paramètre les `()` peuvent être omises
-- Quant aux accolades `{}` autour du traitement, elles peuvent être omises s'il ne contient qu'une instruction. Dans ce cas, le mot clé `return` et le point-virgule `;` de fin d'instruction peuvent eux aussi être omis.
-- Le nom des paramètres est indépendant de celui défini dans la méthode abstraite.
+- Si le type des paramètres peut être inféré, il peut être omis.
+- Si il y un et un seul paramètre, les parenthèses peuvent être omises
+- Si il n'y a qu'une seule instruction, les accolades autour du traitement, peuvent être omises. Dans ce cas, le mot clé `return` et le point-virgule `;` de fin d'instruction peuvent eux aussi être omis.
+- Le nom des paramètres est indépendant de celui défini dans la méthode implémentée.
 
 Si on applique toutes ces règles on peut encore simplifier la lambda utilisée pour définir le `RowMapper` :
 
@@ -111,7 +114,7 @@ puis
 
 [WARNING]
 ====
- Si il est vrai que les lambdas peuvent améliorer la lisibilité du code. Ce n'est pas toujours le cas. En effet une lambda
+Si il est vrai que les lambdas peuvent améliorer la lisibilité du code. Ce n'est pas toujours le cas. En effet une lambda
 de 40 lignes posée comme une verrue au mileu de votre code ne facilitera la lecture du code pour personne.
 
 Par ailleurs, il est strictement interdit de laisser sortir une _checked exception_ d'une lambda. Si vous avez l'habitude dans utiliser, c'est le moment ou jamais d'arréter avec cette hérésie.

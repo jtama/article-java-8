@@ -1,4 +1,4 @@
-== Streams et Optional
+== Streams
 
 L'API `Stream<T>` a été introduite par Java 8. Le stream est un objet java qui permet de définir via une api une série de traitements à réaliser sur une collection ou tableau d'objets . Cette api nécessite largement l'utilisation de lambdas et référence de méthodes. En revanche, aucune structure de boucle n'est nécessaire pour appliquer ces opérations.
 
@@ -10,22 +10,23 @@ Prenons un exemple :
 ----
 include::src/main/java/com/acme/Declarative.java[tag=declarative]
 ----
-Ce programme déclare les opérations à effectuer :
+<1> Création d'un stream à partir du tableau.
+<2> Filtrage des éléments vide.
+<3> Suppression des doublons.
+<4> Décompte des éléments restants.
 
-- la création d'un stream à partir d'un tableau
-- le critère sur lequel filtrer les éléments
-- la suppression de doublon
-- le décompte d'éléments.
+Ce programme ne déclare que les opérations à effectuer. À aucun moment la façon d'exécuter ces traitements n'est définie : pas de boucle, pas de variable locale pour stocker les résultats temporaires, etc.
+Le stream est maître des algorithmes à utiliser, de l'optimisation et même de l'ordonnancement des opérations. La documentation de chacune des méthodes du stream précise les garanties qu'elles offrent, charge au développeur de les prendre en compte.
 
-A aucun moment la façon d'exécuter ces traitements n'est définie : pas de boucle, pas de variable locale pour stocker les résultats temporaires, etc. Le stream est maître des algorithmes à utiliser, de l'optimisation et même de l'ordonnancement des opérations. La documentation de chacune des méthodes du stream précise les garanties qu'elles offrent, charge au développeur de les prendre en compte.
-
-Stream signifie flux : une fois qu'un stream a été utilisé pour appliquer une succession d'opération et a permis d'obtenir un résultat, il n'est pas réutilisable.
+Stream signifie flux : c'est à dire qu'une fois qu'un stream a été utilisé pour appliquer une succession d'opération et a permis d'obtenir un résultat, il n'est plus réutilisable.
 
 L'exemple suivant ne fonctionnera donc pas :
+
 [source, java]
 ----
 include::src/main/java/com/acme/StreamNotReusable.java[tag=no-reusability]
 ----
+<1> icon:bomb[2x,role=red] Stream déjà épuisé !
 
 === Créer un stream : générateurs de flux
 Toute séquence d'éléments peut être transformée en stream :
@@ -63,7 +64,11 @@ include::src/main/java/com/acme/StreamBasics.java[tag=generate-from-void]
 ----
 
 === Appliquer des opérations : méthodes intermédiaires
-Les méthodes intermédiaires sont l'ensemble des opérations applicables à un Stream et qui renvoient un Stream. Puisqu'elles renvoient un Stream, elles peuvent être chaînées pour appliquer plusieurs méthodes intermédiaires successivement.
+Les méthodes intermédiaires sont l'ensemble des opérations applicables à un Stream et qui renvoient un Stream.
+
+Puisqu'elles renvoient un Stream, elles peuvent être chaînées pour appliquer plusieurs méthodes intermédiaires successivement.
+
+Elles ne déclenchent rien et ne font que configurer une future utilisation.
 
 
 - `distinct` : ne conserve que les éléments non égaux du Stream initial.
@@ -72,7 +77,7 @@ Les méthodes intermédiaires sont l'ensemble des opérations applicables à un 
 ----
 include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-distinct]
 ----
-- `sorted` : trie les éléments selon leur ordre naturel. Il est possible de préciser l'ordre dans lequel les éléments doivent être triés en fournissant un Comparator en entrée.
+- `sorted` : Elle prend en paramètre un `Comparator` et trie les éléments selon leur ordre naturel. Il est possible de préciser l'ordre dans lequel les éléments doivent être triés en fournissant un Comparator en entrée.
 
 [source, java]
 ----
@@ -80,13 +85,13 @@ include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-sorted]
 ----
 - `limit` / `skip` : `limit(x)` tronque le stream à x éléments, tandis que `skip(x)` retire du stream les x premiers éléments.
 
-- `filter` : retire du stream tous les éléments ne respectant pas le prédicat passé en paramètre.
+- `filter` : Prend en paramètre un `Predicate` et retire du stream tous les éléments ne le respectant pas.
 
 [source, java]
 ----
 include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-filter]
 ----
-- `map` : applique une opération de transformation sur chacun des éléments du stream.
+- `map` : Prend en paramètre une `Function` et l'applique sur chacun des éléments du stream.
 
 [source, java]
 ----
@@ -107,18 +112,12 @@ Stream<String> names = Stream.of("P","i","e","r","r","e","-","T","o","t","o", "J
 ----
 Le stream d'origine n'a donc pas forcément la même cardinalité que le stream résultant du `flatmap`.
 
-- `peek`
-
-[source, java]
-----
-include::src/main/java/com/acme/StreamBasics.java[tag=middle-methods-]
-----
+- `peek` : Il permet de "jeter un coup d'oeil" sur les éléments du stream, sans les transformer, et sans être final non plus. Dans la grande majorité des cas, si vous apercevez un `peek`, fuyez.
 
 
 
 === Obtenir un résultat : méthodes terminales
 Les méthodes terminales sont les méthodes de l'API stream qui ne renvoient pas un Stream : elles terminent donc les enchaînements d'opérations sur un Stream.
-
 
 
 ==== Dénombrer
@@ -169,7 +168,11 @@ Pour un stream de type `Stream<T>` :
     ** renvoie l'élément le plus petit du stream, selon le comparateur passé en paramètre
     ** type de retour : `Optional<T>`
 
+=== Découpage
 
-=== Optionals
-
+Rappelons que les méthodes intermédiaires ne font effectivement aucun traitement. Si l'on doit effectuer de nombreuses, il peut-être  plus lisible de scinder le code :
+[source, java]
+----
+include::src/main/java/com/acme/StreamBasics.java[tag=splitting-declaration]
+----
 
