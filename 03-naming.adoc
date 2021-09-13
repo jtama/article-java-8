@@ -1,8 +1,8 @@
 == Oui mais alors on a perdu les noms ?
 
-Comme chacun le sait, après le choix entre espace et tabulation, un nommage correcte reste souvent un des meilleurs moyen d'avoir du code lisible.
+Comme chacun le sait, après le choix entre espace et tabulation, un nommage correct reste souvent un des meilleurs moyen d'avoir du code lisible.
 
-Or à priori les merveilleuses lambda nous on fait perdre nos noms !
+Or a priori les merveilleuses lambdas nous ont fait perdre nos noms !
 
 === Référence de méthode
 
@@ -23,9 +23,9 @@ myList.forEach(element -> System.out.println(element));
 // pour chaque élément que l'on appelera "element" de myList,
 // appliquer la méthode System.out.println avec comme paramètre d'entrée "element"
 ----
-La méthode forEach prend en effet un `Consumer<String>` : il prend une String en entrée et ne renvoie rien.
+La méthode forEach applique à chaque élément de la liste le `Consumer<String>` fourni en entrée : fonction qui prend une `String` en entrée et ne renvoie rien.
 
-On pourrait amplement se satisfaire de cette version. Mais poussons encore légèrement le curseur de la concision. En effet, le `forEach` itère sur une simple liste de chaînes de caractères : le consumer prendra forcément un élément de cette liste en paramètre d'entrée. Seule la méthode à appliquer aux éléments nous donne de l'information :
+On pourrait amplement se satisfaire de cette version. Mais poussons encore légèrement le curseur de la concision. En effet, le `forEach` itère sur une simple liste de chaînes de caractères : le `Consumer` prendra forcément un élément de cette liste en paramètre d'entrée. Seule la méthode à appliquer aux éléments nous donne de l'information :
 
 [source, java]
 ----
@@ -42,28 +42,27 @@ On peut les utiliser si notre lambda comporte pour seule instruction un appel de
 
 [source, java]
 ----
-myList.forEach(item -> item.toString()); // équivaut à
+myList.forEach(item -> item.toString()); // équivaut à :
 myList.forEach(String::toString);
 
-myList.forEach(System.out::println); // équivaut à
-myList.forEach(element -> System.out.println(element));
+myList.forEach(element -> System.out.println(element)); // équivaut à :
+myList.forEach(System.out::println);
 ----
 
 === Lambdas nommées
 
 Imaginons désormais que nous souhaitions concaténer notre élément à une autre chaîne de caractères lors de l'affichage :
-[source]
+[source, java]
 ----
-   myList.forEach(element -> System.out.println("This is one element of my list: " + element);
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=before-named-lambda1]
 ----
-Il n'est pas possible de faire référence à la méthode println, puisque son paramètre d'entrée ne peut plus être implicite.
+Il n'est pas possible de faire référence à la méthode _println_, puisque son paramètre d'entrée ne peut plus être implicite.
 
 En revanche, si nous avons plusieurs listes sur lesquelles appliquer ce traitement, il est possible de mutualiser la déclaration de notre expression lambda. Il faudra pour celà, créer une variable correctement typée et l'initialiser avec une lambda.
 
-[source]
+[source, java]
 ----
-myList.forEach(element -> System.out.println("This is one element of my list: " + element);
-theirList.forEach(element -> System.out.println("This is one element of my list: " + element);
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=before-named-lambda2]
 ----
 
 peut devenir :
@@ -73,7 +72,7 @@ peut devenir :
 include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=named-lambda]
 ----
 
-On a pu extraire l'expression lambda dans une variable de type Consumer<String> et ainsi la nommer et la réutiliser.
+On a pu extraire l'expression lambda dans une variable de type `Consumer<String>` et ainsi la nommer et la réutiliser.
 
 Une version qu'on voit moins souvent -et c'est bien dommage- nous permet d'utiliser les méthodes de sa propre classe.
 

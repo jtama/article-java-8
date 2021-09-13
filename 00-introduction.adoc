@@ -1,7 +1,8 @@
 == Introduction
 
-Java 8 est sortie en 2014. À ce jour, les nombreuses nouveautés que cette version a apportées ne semblent toujours pas connus de la grande majorité des développeurs.
+Java 8 est sortie en 2014. À ce jour, les nombreuses nouveautés que cette version a apportées ne semblent toujours pas connues de la grande majorité des développeurs.
 
 Nous aimerions tenter ici d'éclaircir ce que sont les lambdas et les streams. D'après ce que nous entendons lors de nombreuses qualifications techniques, le sujet reste nébuleux.
 
-Nous essaierons aussi, modestement, d'y ajouter un petit retour experience sur leur utilisation...
+Nous essaierons aussi, modestement, d'y ajouter un petit retour d'expérience sur leur utilisation ...
+
