@@ -6,11 +6,11 @@ import java.util.stream.Stream;
 public class Declarative {
     public void declarativeSample() {
         // tag::declarative[]
-        String[] tableau = {"toto", "titi", "tata", "toto", ""};
-        long count = Stream.of(tableau) // création d'un stream à partir du tableau
-                    .filter(String::isBlank) // filtrage des éléments vide
-                    .distinct() // suppression des doublons
-                    .count(); // décompte des éléments restants
+String[] tableau = {"toto", "titi", "tata", "toto", ""};
+long count = Stream.of(tableau) <1>
+            .filter(item -> item.isBlank()) <2>
+            .distinct() <3>
+            .count(); <4>
         // end::declarative[]
     }
 

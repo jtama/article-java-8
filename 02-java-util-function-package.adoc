@@ -4,21 +4,21 @@ Les interfaces qui peuvent être implémentées sous la forme de lambdas ne poss
 
 La classe `Comparator<T>` est un exemple d'interface fonctionnelle commune aux développeurs : sa méthode `compare(param1,param2)` renvoie le résultat de la comparaison entre deux objets de type `T`. Elle existait certes avant java 8, mais cette dernière version l'a dotée de l'annotation `@FunctionalInterface` pour la désigner comme telle.
 
-Nous avons jusqu'ici utilisé des expressions lambdas pour implémenter des interfaces  courantes comme RowMapper, Comparator ou Runnable. Mais les lambdas sont plus largement utilisées pour définir des méthodes à l'endroit même où elles sont utilisées, sans porter d'intérêt particulier à l'interface fonctionnelle sous-jacente. Il est possible de vouloir déclarer de telles méthodes lorsqu'elles ne sont utilisées qu'une fois par exemple, ou encore pour passer un traitement en paramètre d'un autre traitement.
-La méthode que l'on souhaite définir via une lambda doit ici encore implémenter une interface fonctionnelle. Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée java.util.function, qui permet au développeur d'avoir accès aux interfaces fonctionnelles les plus communes sans les définir lui-même.
+Nous avons jusqu'ici utilisé des expressions lambdas pour implémenter des interfaces  courantes comme `RowMapper`, `Comparator` ou `Runnable`. Mais les lambdas sont plus largement utilisées pour définir des méthodes à l'endroit même où elles sont utilisées, sans porter d'intérêt particulier à l'interface fonctionnelle sous-jacente. Il est possible de vouloir déclarer de telles méthodes lorsqu'elles ne sont utilisées qu'une fois par exemple, ou encore pour passer un traitement en paramètre d'un autre traitement.
+La méthode que l'on souhaite définir via une lambda doit ici encore implémenter une interface fonctionnelle. Java 8 fournit une bibliothèque d'interfaces fonctionnelles standard appelée `java.util.function`, qui permet au développeur d'avoir accès aux interfaces fonctionnelles les plus communes sans les définir lui-même.
 
 === L'essentiel
-Les fonctions de l'api java.util.function sont des spécialisations des types suivants :
+Les interfaces du package `java.util.function` (naissance avec Java 8) sont des fonctions génériques définissant les cas d'usages les plus courants:
 
-- Une `Function` prendra un ou plusieurs paramètres en entrée et retournera un résultat.
-- Un `Supplier` ne prendra pas de paramètre d'entrée et fournira un résultat.
-- Un `Consumer` prendra un ou plusieurs paramètres d'entrée et ne renverra aucun résultat.
-- Un `Operator` prendra un ou plusieurs paramètres du même type et fournira un retour de ce type.
-- Un `Predicate` prendra un ou plusieurs paramètres en entrée et retournera un booléen.
+- Une _function_ prendra un ou plusieurs paramètres en entrée et retournera un résultat.
+- Un _supplier_ ne prendra pas de paramètre d'entrée et fournira un résultat.
+- Un _consumer_ prendra un ou plusieurs paramètres d'entrée et ne renverra aucun résultat.
+- Un _operator_ prendra un ou plusieurs paramètres du même type et fournira un retour de ce type.
+- Un _predicate_ prendra un ou plusieurs paramètres en entrée et retournera un booléen.
 
 === Plus en détail
 
-==== Des plus basiques ...
+==== Des basiques ...
 
 - `Function<T,R>` : désigne une fonction prenant un paramètre d'entrée de type `T` et retournant un objet de type `R`.
 
@@ -34,6 +34,20 @@ Elle s'applique en utilisant apply :
 >> getNumber.apply(1); \\ renvoie Number 1
 ----
 
+[NOTE]
+====
+Elle se décline en :
+
+* `UnaryOperator<T>` : fonction dont les types d’entrée et de retour sont identiques. C’est donc une `Function<T,T>`.
+* `BiFunction<T,U,R>` : fonction qui prend en entrée deux paramètres, le premier de type `T` et le second de type `U`.
+* `BinaryOperator<T>` : fonction qui prend en entrée deux paramètres de type `T`. C’est donc une `BiFunction<T,T,T>`. Par exemple :
+
+[source]
+----
+BinaryOperator<Integer> add = (a,b) -> a+b;
+----
+====
+
 - `Consumer<T>` : désigne une fonction prenant un paramètre d'entrée de type `T` et de type de retour `void`.
 
 [source]
@@ -47,6 +61,11 @@ Elle s'applique en utilisant apply :
 ----
 >> display.apply(1); \\ affiche Number 1
 ----
+
+[NOTE]
+====
+Il se décline également en `BiConsumer<T,U>` : prend en entrée deux paramètres, le premier de type `T` et le second de type `U`.
+====
 
 - `Supplier<R>` : désigne une fonction ne prenant aucun paramètre d'entrée et retournant un objet de type `R`.
 
@@ -78,19 +97,79 @@ Elle s'applique en utilisant test :
 >> isNull.test("HelloJava8"); // renvoie faux
 ----
 
-==== ... Aux plus spécifiques
+[NOTE]
+====
+Les fonctions présentées ci-dessous ne permettent pas de manipuler des types primitifs. Des fonctions spécifiques existent pour ceux-ci :
 
-- `UnaryOperator<T>` : représente une fonction dont les types d'entrée et de retour sont identiques. C'est donc une `Function<T,T>`.
-- `BiFunction<T,U,R>`, `BiConsumer<T,U>` : prennent en entrée deux paramètres, le premier de type `T` et le second de type `U`.
-- `BinaryOperator<T>` : prend en entrée deux paramètres de type `T`. C'est donc une `BiFunction<T,T,T>`.
-Par exemple :
+* Paramètre d'entrée de type primitif :
+
+    ** `IntFunction<R>`, `IntConsumer` dont le type du paramètre d'entrée est `int`.
+    ** Et les autres dérivés sur le même modèle : `DoubleFunction<R>`, `DoubleConsumer`, `DoubleUnaryOperator`, `LongFunction<R>`, etc.
+
+* Retour de type primitif :
+    ** `IntSupplier` dont le type de retour est `int`, `DoubleSupplier` dont le type de retour est double, etc.
+** `ToIntFunction<T>` dont le type de retour est `int`, et sur le même modèle : `ToIntBiFunction<T,U>`, `ToLongFunction<T>`, `ToLongBiFunction<T,U>`, `ToDoubleFunction<T>`, etc.
+====
+
+==== ... Aux composées
+
+===== Composition de prédicats
+La composition de prédicats permet de créer un prédicat par la combinaison logique de plusieurs prédicats.
+
+Prenons l'exemple suivant :
 
 [source]
 ----
-BinaryOperator<Integer> add = (a,b) -> a+b;
+Predicate<Sock> isRed;
+Predicate<Sock> isBlue;
+Predicate<Sock> isHoled;
+----
+Pour déterminer si une chaussette est rouge ou bleue et non trouée, on définit le prédicat ci-dessous :
+[source]
+----
+Predicate<Sock> isRedWithoutHoles = sock -> (isRed.test(sock) || isBlue.test(sock)) && !isHoled.test(sock);
 ----
 
-- `IntFunction<R>`, `IntConsumer` dont le type du paramètre d'entrée est `int`. `IntSupplier` dont le type de retour est `int`. Et les autres dérivés sur le même modèle : `DoubleFunction<R>`, `DoubleConsumer`, `DoubleSupplier`, `DoubleUnaryOperator`, `LongFunction<R>`, etc.
-- `ToIntFunction<T>` dont le type de retour est `int`, et ses dérivés : `ToIntBiFunction<T,U>`, `ToLongFunction<T>`, `ToLongBiFunction<T,U>`, `ToDoubleFunction<T>`, etc.
+L'interface `Predicate` propose des méthodes permettant une réécriture concise et naturelle de ce prédicat :
+[source]
+----
+Predicate<Sock> isRedWithoutHoles = isRed.or(isBlue).and(not(isHoled));
+----
+
+
+===== Composition de fonctions
+En mathématiques, la composition consiste à créer une fonction par l'application d'une fonction au résultat d'une autre fonction. Par exemple :
+
+[source]
+----
+f(x) = x + 1
+g(x) = x²
+f(g(x)) = (x²) + 1
+g(f(x)) = (x + 1)²
+----
+où f(g(x)) et g(f(x)) sont des compositions de f et g.
+
+En utilisant les fonctions du package `java.util.function`, on peut créer ces mêmes fonctions composées :
+
+[source,java]
+----
+Function<Integer,Integer> f = x -> x + 1;
+Function<Integer,Integer> g = x -> x^2;
+Function<Integer,Integer> composition1 = x -> f.apply(g.apply(x)); // f(g(x))
+Function<Integer,Integer> composition2 = x -> g.apply(f.apply(x)); // g(f(x))
+----
+
+Vous conviendrez aisément que ces `apply` successifs ne sont pas d'une lisibilité à toute épreuve. Pour clarifier ces compositions, Java 8 propose pour les _function_ une interface plus commode :
+
+[source,java]
+----
+Function<Integer,Integer> composition1 = f.compose(g); // <1>
+Function<Integer,Integer> composition2 = f.andThen(g); // <2>
+----
+La différence entre `compose` et `andThen` réside dans l'ordre d'évaluation des fonction :
+
+<1> équivalent à `g.andThen(f)`
+
+<2> équivalent à `g.compose(f)`
 
 

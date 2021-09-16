@@ -1,13 +1,15 @@
-== Oui mais alors on a perdu les noms ? Method référence, named lambda
+== Oui mais alors on a perdu les noms ?
 
-TODO blabla
+Comme chacun le sait, après le choix entre espace et tabulation, un nommage correct reste souvent un des meilleurs moyen d'avoir du code lisible.
+
+Or a priori les merveilleuses lambdas nous ont fait perdre nos noms !
 
 === Référence de méthode
 
 Imaginons que nous ayons une liste de chaînes de caractères myList de type List<String>, dont nous souhaitons afficher chacun des élément sur la sortie standard.
 L'implémentation naïve serait la suivante :
 
-[source]
+[source, java]
 ----
 for (String element : myList) {
     System.out.println(element);
@@ -15,19 +17,19 @@ for (String element : myList) {
 ----
 
 Mais maintenant que nous connaissons les lambdas, passons à une version plus concise :
-[source]
+[source, java]
 ----
 myList.forEach(element -> System.out.println(element));
 // pour chaque élément que l'on appelera "element" de myList,
 // appliquer la méthode System.out.println avec comme paramètre d'entrée "element"
 ----
-La méthode forEach prend en effet un Consumer<String> : il prend une String en entrée et ne renvoie rien.
+La méthode forEach applique à chaque élément de la liste le `Consumer<String>` fourni en entrée : fonction qui prend une `String` en entrée et ne renvoie rien.
 
-On pourrait amplement se satisfaire de cette version. Mais poussons encore légèrement le curseur de la concision. En effet, le forEach itère sur une simple liste de chaînes de caractères : le consumer prendra forcément un élément de cette liste en paramètre d'entrée. Seule la méthode à appliquer aux éléments nous donne de l'information :
+On pourrait amplement se satisfaire de cette version. Mais poussons encore légèrement le curseur de la concision. En effet, le `forEach` itère sur une simple liste de chaînes de caractères : le `Consumer` prendra forcément un élément de cette liste en paramètre d'entrée. Seule la méthode à appliquer aux éléments nous donne de l'information :
 
-[source]
+[source, java]
 ----
- myList.forEach(System.out::println); //  à chaque élément de myList, appliquer la méthode println issue de la classe System.out
+myList.forEach(System.out::println); //  à chaque élément de myList, appliquer la méthode println issue de la classe System.out
 ----
 
 On vient alors d'utiliser une référence de méthode. De manière générale, les références de méthodes s'effectuent ainsi :
@@ -36,23 +38,31 @@ On vient alors d'utiliser une référence de méthode. De manière générale, l
  <nom de la classe ou de l'instance>::<nom de la méthode>
 ----
 
+On peut les utiliser si notre lambda comporte pour seule instruction un appel de méthode et une seule variable.
 
+[source, java]
+----
+myList.forEach(item -> item.toString()); // équivaut à :
+myList.forEach(String::toString);
+
+myList.forEach(element -> System.out.println(element)); // équivaut à :
+myList.forEach(System.out::println);
+----
 
 === Lambdas nommées
 
 Imaginons désormais que nous souhaitions concaténer notre élément à une autre chaîne de caractères lors de l'affichage :
-[source]
+[source, java]
 ----
-   myList.forEach(element -> System.out.println("This is one element of my list: " + element);
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=before-named-lambda1]
 ----
-Il n'est pas possible de faire référence à la méthode println, puisque son paramètre d'entrée ne peut plus être implicite.
+Il n'est pas possible de faire référence à la méthode _println_, puisque son paramètre d'entrée ne peut plus être implicite.
 
-En revanche, si nous avons plusieurs listes sur lesquelles appliquer ce traitement, il est possible de mutualiser la déclaration de notre expression lambda.
+En revanche, si nous avons plusieurs listes sur lesquelles appliquer ce traitement, il est possible de mutualiser la déclaration de notre expression lambda. Il faudra pour celà, créer une variable correctement typée et l'initialiser avec une lambda.
 
-[source]
+[source, java]
 ----
-myList.forEach(element -> System.out.println("This is one element of my list: " + element);
-theirList.forEach(element -> System.out.println("This is one element of my list: " + element);
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=before-named-lambda2]
 ----
 
 peut devenir :
@@ -62,28 +72,58 @@ peut devenir :
 include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=named-lambda]
 ----
 
-On a pu extraire l'expression lambda dans une variable de type Consumer<String> et ainsi la nommer et la réutiliser.
+On a pu extraire l'expression lambda dans une variable de type `Consumer<String>` et ainsi la nommer et la réutiliser.
 
-Concrètement, cet exemple est équivalent à  :
+Une version qu'on voit moins souvent -et c'est bien dommage- nous permet d'utiliser les méthodes de sa propre classe.
 
+Je peux écrire :
 
 [source,java]
 ----
-include::src/main/java/com/acme/MethodReferencePrinter.java[tag=named-lambda-equivalence]
+include::src/main/java/com/acme/MethodReferencePrinter.java[tag=named-lambda-equivalence-first]
+----
+
+Or comme on l'a vu, si la lambda ne contient pour seule instruction un appel de méthode, on peut utiliser les méthodes références :
+
+[source,java]
+----
+include::src/main/java/com/acme/MethodReferencePrinter.java[tag=named-lambda-equivalence-second]
 ----
 
 
+== Cas réel
 
+Ainsi lors d'une revue, nous sommes tombés sur le code suivant :
 
-
-
-
-[source]
+[source, java]
 ----
-myList.forEach(element -> // pour chaque élément que l'on appelera "element" de myList,
-    {
-        if (Pattern.matches("[A-Za-z]+", element)) // si element est uniquement constitué de lettres
-            System.out.println(element); // appliquer la méthode System.out.println avec comme paramètre d'entrée "element"
+public Map<String, List<DataRecord>> getMap(List<DataRecord> dataRecordList, boolean sortByAnalysisName){
+    Map<String, List<DataRecord>> sortedDataRecord = new HashMap<>();//<1>
+    for (DataRecord record : dataRecordList) { //<2>
+        String keyword = sortByAnalysisName ? record.getAnalysisName() : record.getJobId(); //<3>
+        if (!sortedDataRecord.containsKey(keyword)) { //<4>
+            sortedDataRecord.put(keyword, new ArrayList<>()); //<5>
+        }
+        sortedDataRecord.get(keyword).add(record); //<6>
     }
-);
+    return sortedDataRecord;
+}
 ----
+<1> On initialise la `map` que l'on va retourner
+<2> On boucle sur la liste
+<3> On extraie la clef de mapping
+<4> Si la `map` ne contient pas encore la clef
+<5> On l'ajoute avec  une liste vide
+<6> On ajoute l'élément à la liste présente à cette clef
+
+En utilisant les apis à notre disposition, nous avons effectué la réécriture suivante :
+
+[source, java]
+----
+public Map<String, List<DataRecord>> getMap(List<DataRecord> dataRecordList, boolean sortByAnalysisName){
+    Function<DataRecord, String> classifier = sortByAnalysisName ? DataRecord::getAnalysisName : DataRecord::getJobId; //<1>
+    return dataRecordList.stream().collect(Collectors.groupingBy(classifier)); //<2>
+    }
+----
+<1> On initialise le `classifier`
+<2> On regarde le langage travailler.
