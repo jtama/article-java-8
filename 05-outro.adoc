@@ -1,0 +1,11 @@
+== Conclusion
+
+Avec c'est article qui ne fait que gratter la surface, nous esperons avant tout donner des clefs pour comprendre les mécanismes à l'œuvre dans les streams, et les APIs fonctionnelles.
+
+Nous pourrions encore explorer la programmation fonctionnelle (ou ce qu'il est possible de faire depuis Java8), nous pencher sur les exécutions de stream en parallèle, ou sur les optimisations faites par le compilateur java.
+
+Mais avant tout ce qui nous intéresse ici, c'est de lever le voile sur la _magie noire_ et de vous donner envie d'aller creuser vous mêmes les merveilleuses arcanes suprêmes de la connaissance du java.
+
+Bon voyage.
+
+Lucile Thienot & Jérôme Tama

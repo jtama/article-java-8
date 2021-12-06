@@ -10,20 +10,20 @@ Pour nous servir d'exemple nous utiliserons l'interface `org.springframework.jdb
 ----
 public interface RowMapper<T> {
 
-	T mapRow(ResultSet rs, int rowNum) throws SQLException;
+  T mapRow(ResultSet rs, int rowNum) throws SQLException;
 
 }
 ----
 
 Les classes internes allègent le code en nous permettant de ne pas créer des classes à tour de bras pour finalement ne redéfinir ou n'implémenter qu'un nombre réduit de méthodes.
 
-Seulement ces classes internes restent très verbeuses : dans les classes internes de l'exemple ci-dessous, combien de lignes nous donnent réellement de l'information  ? Pour combien de lignes dont nous devons faire abstraction pour nous concentrer sur l'essentiel ?
+Seulement ces classes internes restent très verbeuses : dans les classes internes de l'exemple ci-dessous, combien de lignes nous donnent réellement de l'information  ? De combien de lignes devons-nous faire abstraction pour nous concentrer sur l'essentiel ?
 
 [source,java]
 ----
 include::src/main/java/com/acme/AnonymousInnerClassUsage.java[tag=legacySample]
 ----
-<1> Déclaration et utisation de l'inner classe
+<1> Déclaration et utilisation de l'inner classe
 <2> Implémentation de la méthode.
 
 
@@ -83,8 +83,8 @@ Dans notre exemple, le compilateur comprend de lui-même qu'on définit un `RowM
 Notons que dans une expression lambda :
 
 - Si le type des paramètres peut être inféré, il peut être omis.
-- Si il y a un et un seul paramètre, les parenthèses peuvent être omises.
-- Si il n'y a qu'une seule instruction, les accolades autour du traitement, peuvent être omises. Dans ce cas, le mot clé `return` et le point-virgule `;` de fin d'instruction peuvent eux aussi être omis.
+- S'il y a un et un seul paramètre, les parenthèses peuvent être omises.
+- S'il n'y a qu'une seule instruction, les accolades autour du traitement, peuvent être omises. Dans ce cas, le mot clé `return` et le point-virgule `;` de fin d'instruction peuvent eux aussi être omis.
 - Le nom des paramètres est indépendant de celui défini dans la méthode implémentée.
 
 Si on applique toutes ces règles on peut encore simplifier la lambda utilisée pour définir le `RowMapper` :
@@ -115,8 +115,8 @@ puis
 
 [WARNING]
 ====
-Si il est vrai que les lambdas peuvent améliorer la lisibilité du code. Ce n'est pas toujours le cas. En effet une lambda
-de 40 lignes posée comme une verrue au mileu de votre code ne facilitera la lecture du code pour personne.
+S'il est vrai que les lambdas peuvent améliorer la lisibilité du code. Ce n'est pas toujours le cas. En effet une lambda
+de 40 lignes posée comme une verrue au milieu de votre code ne facilitera la lecture du code pour personne.
 
 Par ailleurs, il est strictement interdit de laisser sortir une _checked exception_ d'une lambda. Si vous avez l'habitude d'en utiliser, c'est le moment ou jamais d'arrêter avec cette hérésie.
 ====

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,7 +50,61 @@ Map<Integer, List<PairOfSocks>> pairOfSocksBySize =  smallUsedSocksStream
 
     }
 
-    public void howToTerminate() throws IOException {
+    public void howToReduce() throws IOException {
+        count();
+        anyMatch();
+        collect();
+        reduce();
+    }
+
+    private void collect() {
+        // tag::end-methods-collect[]
+PairOfSocks[] socks = {
+        new PairOfSocks("blanc", 38),
+        new PairOfSocks("bordeaux", 42),
+        new PairOfSocks("bleu", 39)
+};
+
+List<String> availableColors = Stream.of(socks)
+                                    .map(sock -> sock.color) // only keep colors
+                                    .collect(Collectors.toList()); // make a list of them
+
+Map<String,Integer> availableSizesByColor = Stream.of(socks)
+                                                  .collect(Collectors.toMap(
+                                                            sock -> sock.color, // take sock colors as keys
+                                                            sock -> sock.size // take sock sizes as values
+                                                            )); // Only works if there are no color duplicates
+        // end::end-methods-collect[]
+    }
+
+    private void anyMatch() {
+        // tag::end-methods-anyMatch[]
+PairOfSocks[] socks = {
+        new PairOfSocks("blanc", 38),
+        new PairOfSocks("bordeaux", 42),
+        new PairOfSocks("bleu", 39)
+};
+
+boolean existsSockSizeOver38 = Stream.of(socks)
+                                    .anyMatch(sock -> sock.size > 38); // returns true
+        // end::end-methods-anyMatch[]
+    }
+
+    private void count() {
+        // tag::end-methods-count[]
+PairOfSocks[] socks = {
+        new PairOfSocks("blanc", 38),
+        new PairOfSocks("bordeaux", 42),
+        new PairOfSocks("bleu", 39)
+};
+
+long socksUnderSize40 = Stream.of(socks)
+                            .filter(sock -> sock.size < 40)
+                            .count(); // returns 2
+        // end::end-methods-count[]
+    }
+
+    private void reduce() {
         // tag::end-methods-reduce[]
 PairOfSocks[] socks = {
         new PairOfSocks("blanc", 38),
@@ -60,7 +115,8 @@ PairOfSocks[] socks = {
 PairOfSocks neutralSock = new PairOfSocks("gris", 40);
 BinaryOperator<PairOfSocks> makePatchworkSocks = (someSocks, someOtherSocks) -> new PairOfSocks(someSocks.color + "," + someOtherSocks.color, someSocks.size);
 
-PairOfSocks patchworkSocks = Arrays.stream(socks).reduce(neutralSock, makePatchworkSocks); // >> donne une PairOfSocks("gris,blanc,bordeaux,bleu", 40)
+PairOfSocks patchworkSocks = Arrays.stream(socks)
+                                .reduce(neutralSock, makePatchworkSocks); // returns a PairOfSocks("gris,blanc,bordeaux,bleu", 40)
         // end::end-methods-reduce[]
     }
 
