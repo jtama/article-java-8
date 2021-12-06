@@ -12,10 +12,10 @@ public class LambdaAsAnonymousInnerClassUsage {
 
     // tag::lambdaSample[]
 public List<DataRecord> getRecords(String jobId) {
-    return jdbcTemplate.query("select * from DATARECORD ",
-            (ResultSet rs, int rowNum) -> {
-                return new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"));
-            });
+  return jdbcTemplate.query("select * from DATARECORD ",
+     (ResultSet rs, int rowNum) -> {
+        return new DataRecord(rs.getString("job_id"), rs.getString("analysis_name"));
+     });
 }
     // end::lambdaSample[]
 

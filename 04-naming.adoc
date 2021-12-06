@@ -1,0 +1,164 @@
+== Oui mais alors on a perdu les noms ?
+
+Comme chacun le sait, après le choix entre espace et tabulation, un nommage correct reste souvent un des meilleurs moyens d'avoir du code lisible.
+
+Or a priori les merveilleuses lambdas nous ont fait perdre nos noms !
+
+=== Référence de méthode
+
+Imaginons que nous ayons une liste de chaînes de caractères myList de type List<String>, dont nous souhaitons afficher chacun des éléments sur la sortie standard.
+L'implémentation naïve serait la suivante :
+
+[source, java]
+----
+for (String element : myList) {
+    System.out.println(element);
+}
+----
+
+Mais maintenant que nous connaissons les lambdas, passons à une version plus concise :
+[source, java]
+----
+myList.forEach(element -> System.out.println(element));
+// pour chaque élément que l'on appelera "element" de myList,
+// appliquer la méthode System.out.println avec comme paramètre d'entrée "element"
+----
+La méthode forEach applique à chaque élément de la liste le `Consumer<String>` fourni en entrée : fonction qui prend une `String` en entrée et ne renvoie rien.
+
+On pourrait amplement se satisfaire de cette version. Mais poussons encore légèrement le curseur de la concision. En effet, le `forEach` itère sur une simple liste de chaînes de caractères : le `Consumer` prendra forcément un élément de cette liste en paramètre d'entrée. Seule la méthode à appliquer aux éléments nous donne de l'information :
+
+[source, java]
+----
+myList.forEach(System.out::println); //  à chaque élément de myList, appliquer la méthode println issue de la classe System.out
+----
+
+On vient alors d'utiliser une référence de méthode. De manière générale, les références de méthodes s'effectuent ainsi :
+
+----
+ <nom de la classe ou de l'instance>::<nom de la méthode>
+----
+
+On peut les utiliser si notre lambda comporte pour seule instruction un appel de méthode et une seule variable.
+
+[source, java]
+----
+myList.forEach(item -> item.toString()); // équivaut à :
+myList.forEach(String::toString);
+
+myList.forEach(element -> System.out.println(element)); // équivaut à :
+myList.forEach(System.out::println);
+----
+
+=== Lambdas nommées
+
+Imaginons désormais que nous souhaitions concaténer notre élément à une autre chaîne de caractères lors de l'affichage :
+[source, java]
+----
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=before-named-lambda1]
+----
+Il n'est pas possible de faire référence à la méthode _println_, puisque son paramètre d'entrée ne peut plus être implicite.
+
+En revanche, si nous avons plusieurs listes sur lesquelles appliquer ce traitement, il est possible de mutualiser la déclaration de notre expression lambda. Il faudra pour cela, créer une variable correctement typée et l'initialiser avec une lambda.
+
+[source, java]
+----
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=before-named-lambda2]
+----
+
+peut devenir :
+
+[source,java]
+----
+include::src/main/java/com/acme/NamedLambdaPrinter.java[tag=named-lambda]
+----
+
+On a pu extraire l'expression lambda dans une variable de type `Consumer<String>` et ainsi la nommer et la réutiliser.
+
+Une version qu'on voit moins souvent -et c'est bien dommage- nous permet d'utiliser les méthodes de sa propre classe.
+
+Je peux écrire :
+
+[source,java]
+----
+include::src/main/java/com/acme/MethodReferencePrinter.java[tag=named-lambda-equivalence-first]
+----
+
+Or comme on l'a vu, si la lambda contient pour seule instruction un appel de méthode, on peut utiliser les méthodes références :
+
+[source,java]
+----
+include::src/main/java/com/acme/MethodReferencePrinter.java[tag=named-lambda-equivalence-second]
+----
+
+
+== Cas réel
+
+=== Cas 1
+
+Ainsi lors d'une revue, nous sommes tombés sur le code suivant :
+
+[source, java]
+----
+include::src/main/java/com/acme/CasReelSansLambda.java[tag=casReelAAmeliorerAvant]
+----
+<1> On instancie la `map` que l'on va retourner
+<2> On boucle sur la liste
+<3> On extraie la clef de regroupement
+<4> Si la `map` ne contient pas encore la clef
+<5> On l'ajoute avec  une liste vide
+<6> On ajoute l'élément à la liste présente à cette clef
+
+En utilisant les apis à notre disposition, nous avons effectué la réécriture suivante :
+
+[source, java]
+----
+include::src/main/java/com/acme/CasReelLambda.java[tag=casReelAAmeliorerApres]
+----
+<1> On initialise le `classifier`
+<2> On regarde la plateforme travailler.
+
+
+=== Cas 2
+
+Regardons un autre exemple de code également réel, dont le jargon métier a été modifié :
+
+[source,java]
+----
+include::src/main/java/com/acme/CasReelLambda.java[tag=casReelAAmeliorerAvant]
+----
+Alors, sceptique ? Pourtant tout cela nous semble très clair
+!
+En effet, l'api `Stream` utilisée à mauvais escient devient tout à fait indigeste. Considérez les trois réécritures suivantes :
+
+
+==== Mieux avec lambda
+[source,java]
+----
+include::src/main/java/com/acme/CasReelLambda.java[tag=casReelAmelioreLambda]
+----
+
+==== Mieux sans lambda
+[source,java]
+----
+include::src/main/java/com/acme/CasReelLambda.java[tag=casReelAmelioreSansLambda]
+----
+
+==== Mieux legacy
+[source,java]
+----
+include::src/main/java/com/acme/CasReelLambda.java[tag=casReelAmelioreLambda2]
+----
+
+==== Et le code commun aux réécritures :
+[source,java]
+----
+include::src/main/java/com/acme/CasReelLambda.java[tag=casReelAmelioreCommun]
+----
+
+Les réécritures <1> et <3> utilisent l'api `Stream` tandis que la <2> utilise des boucles _for_ et conditions basiques du langage.
+
+Bien que moins concise, la réécriture <2> n'en est pas moins lisible que les autres.
+
+Le gain en lisibilité obtenu via ces réécritures ne découle que de la réorganisation et de l'extraction de la logique métier dans des méthodes simples, et non pas de l'utilisation ou non des fonctionalités de Java 8.
+
+Les nouveautés ne sont pas forcément mieux, ni forcément mauvaises. Et c'est la force d'un bon développeur que de savoir quand et où les utiliser.

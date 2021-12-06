@@ -12,7 +12,7 @@
 include::00-introduction.adoc[]
 include::01-inner-class-to-lambda.adoc[]
 include::02-java-util-function-package.adoc[]
-include::05-streams-and-optionals.adoc[]
-include::03-naming.adoc[]
-include::04-manipulating-functions.adoc[]
+include::03-streams-and-optionals.adoc[]
+include::04-naming.adoc[]
+include::05-outro.adoc[]
 

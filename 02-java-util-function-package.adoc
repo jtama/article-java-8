@@ -1,6 +1,6 @@
 == Consumer, supplier, Function and many others
 
-Les interfaces qui peuvent être implémentées sous la forme de lambdas ne possèdent qu'une unique méthode abstraite. Elles sont appelées interfaces fonctionnelles et peuvent être annotées `@FunctionalInterface`. Cette annotation permet au compilateur de vérifier que l'interface est bien fonctionnelle, mais elle n'est en aucun cas obligatoire.
+Les interfaces qui peuvent être implémentées sous la forme de lambdas ne possèdent qu'une unique méthode non implémentée. Elles sont appelées interfaces fonctionnelles et peuvent être annotées `@FunctionalInterface`. Cette annotation permet au compilateur de vérifier que l'interface est bien fonctionnelle, mais elle n'est en aucun cas obligatoire.
 
 La classe `Comparator<T>` est un exemple d'interface fonctionnelle commune aux développeurs : sa méthode `compare(param1,param2)` renvoie le résultat de la comparaison entre deux objets de type `T`. Elle existait certes avant java 8, mais cette dernière version l'a dotée de l'annotation `@FunctionalInterface` pour la désigner comme telle.
 
@@ -127,7 +127,7 @@ Predicate<Sock> isHoled;
 Pour déterminer si une chaussette est rouge ou bleue et non trouée, on définit le prédicat ci-dessous :
 [source]
 ----
-Predicate<Sock> isRedWithoutHoles = sock -> (isRed.test(sock) || isBlue.test(sock)) && !isHoled.test(sock);
+Predicate<Sock> isRedOrBlueWithoutHoles = sock -> (isRed.test(sock) || isBlue.test(sock)) && !isHoled.test(sock);
 ----
 
 L'interface `Predicate` propose des méthodes permettant une réécriture concise et naturelle de ce prédicat :
